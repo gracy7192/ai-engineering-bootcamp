@@ -8,13 +8,20 @@ client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 history = []
 while True:
     question = input("You: ")
-
+    
     if question.lower() == "exit":
         break
 
+    history.append({
+        "role": "user",
+        "parts": [{"text": question}]
+        })
+    
+    print(history)
+
     response = client.models.generate_content(
         model="gemini-2.5-flash-lite",
-        contents=question
+        contents=history
     )
 
     print("\nGemini:", response.text)
