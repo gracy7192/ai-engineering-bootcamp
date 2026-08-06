@@ -19,14 +19,22 @@ while True:
     
     print(history)
 
-    response = client.models.generate_content(
+    response = client.models.generate_content_stream(
         model="gemini-2.5-flash-lite",
         contents=history
     )
 
-    print("\nGemini:", response.text)
+    print("AI: ", end="")
+
+    full_response = ""
+
+    for chunk in response:
+        if chunk.text:
+            print(chunk.text, end="", flush=True)
+            full_response += chunk.text
     print()
+
     history.append({
         "role": "model",
-        "parts": [{"text": response.text}]
+        "parts": [{"text": full_response}]
     })
