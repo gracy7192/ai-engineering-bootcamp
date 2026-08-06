@@ -26,3 +26,7 @@ while True:
 
     print("\nGemini:", response.text)
     print()
+    history.append({
+        "role": "model",
+        "parts": [{"text": response.text}]
+    })
