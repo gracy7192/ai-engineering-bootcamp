@@ -1,0 +1,21 @@
+Our company is called NovaTech.
+
+NovaTech develops software products for small and medium-sized businesses.
+
+Our main products are:
+
+NovaCRM — a customer relationship management platform.
+NovaDesk — a customer support platform.
+NovaAnalytics — a business analytics platform.
+
+NovaCRM costs ₹500 per month.
+NovaDesk costs ₹800 per month.
+NovaAnalytics costs ₹1200 per month.
+
+Employees receive 20 paid vacation days per year.
+
+The company provides health insurance to all full-time employees.
+
+The headquarters is located in Delhi, India.
+
+The company was founded in 2020.
