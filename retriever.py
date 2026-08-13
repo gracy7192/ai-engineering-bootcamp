@@ -7,8 +7,21 @@ def load_knowledge():
         return file.read()
 
 
-def chunk_text(text):
-    chunks = text.split("\n\n")
+def chunk_text(text, chunk_size=3, overlap=1):
+    paragraphs = text.split("\n\n")
+
+    chunks = []
+
+    start = 0
+
+    while start < len(paragraphs):
+        end = start + chunk_size
+
+        chunk = "\n\n".join(paragraphs[start:end])
+        chunks.append(chunk)
+
+        start += chunk_size - overlap
+
     return chunks
 
 
@@ -21,39 +34,15 @@ def get_embedding(text):
     return response.embeddings[0].values
 
 
-def cosine_similarity(vector_a, vector_b):
-    a = np.array(vector_a)
-    b = np.array(vector_b)
-
-    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
-
-
-def retrieve_chunks(question, chunks):
-    question_embedding = get_embedding(question)
-
-    scored_chunks = []
+def embed_chunks(chunks):
+    embedded_chunks = []
 
     for chunk in chunks:
-        chunk_embedding = get_embedding(chunk)
+        embedding = get_embedding(chunk)
 
-        score = cosine_similarity(
-            question_embedding,
-            chunk_embedding
-        )
+        embedded_chunks.append({
+            "text": chunk,
+            "embedding": embedding
+        })
 
-        scored_chunks.append((score, chunk))
-
-    scored_chunks.sort(reverse=True)
-
-    return [chunk for score, chunk in scored_chunks[:2]]
-
-knowledge = load_knowledge()
-chunks = chunk_text(knowledge)
-
-question = "How much annual leave do employees get?"
-
-results = retrieve_chunks(question, chunks)
-
-for result in results:
-    print("\n--- Relevant chunk ---")
-    print(result)
+    return embedded_chunks

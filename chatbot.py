@@ -1,5 +1,7 @@
 from config import client
-from retriever import load_knowledge, chunk_text, retrieve_chunks
+
+from retriever import get_embedding
+from vector_store import search
 
 def chat():
     system_instruction = """
@@ -7,11 +9,6 @@ def chat():
     If the answer is not contained in the context, say you don't know based on the available information.
     Explain concepts clearly and practically.
     Use examples when helpful."""
-
-    knowledge = load_knowledge()
-    chunks = chunk_text(knowledge)
-
-    
 
     history = []
 
@@ -26,9 +23,22 @@ def chat():
             "parts": [{"text": question}]
         })
 
-        relevant_chunks = retrieve_chunks(question, chunks)
-        context = "\n\n".join(relevant_chunks)
+        question_embedding = get_embedding(question)
 
+        search_results = search(question_embedding)
+
+        print("\n--- RETRIEVAL DEBUG ---")
+
+        for document, distance in zip(
+        search_results["documents"][0],
+        search_results["distances"][0]
+        ):
+           print(f"Distance: {distance}")
+           print(document)
+           print("-------------------------")
+
+        relevant_chunks = search_results["documents"][0]
+        context = "\n\n".join(relevant_chunks)
 
         response = client.models.generate_content_stream(
         model="gemini-2.5-flash-lite",
