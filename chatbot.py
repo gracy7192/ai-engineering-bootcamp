@@ -1,7 +1,10 @@
 from config import client
 
-from retriever import get_embedding
-from vector_store import search
+from retriever import load_knowledge, chunk_text
+from hybrid_search import hybrid_search
+
+knowledge = load_knowledge()
+chunks = chunk_text(knowledge)
 
 def chat():
     system_instruction = """
@@ -23,21 +26,12 @@ def chat():
             "parts": [{"text": question}]
         })
 
-        question_embedding = get_embedding(question)
-
-        search_results = search(question_embedding)
-
-        print("\n--- RETRIEVAL DEBUG ---")
-
-        for document, distance in zip(
-        search_results["documents"][0],
-        search_results["distances"][0]
-        ):
-           print(f"Distance: {distance}")
-           print(document)
-           print("-------------------------")
-
-        relevant_chunks = search_results["documents"][0]
+        relevant_chunks = hybrid_search(
+        question,
+        chunks,
+        top_k=4
+        )
+        
         context = "\n\n".join(relevant_chunks)
 
         response = client.models.generate_content_stream(
